@@ -1,0 +1,136 @@
+-- SRN: PES2UG21CS297  ,    NAME: MOHAMMED AYMAN HASIB
+-- SRN: PES1UG21CS336  ,    NAME: MIHA PARVEEZ
+
+
+
+-- Table: Student
+CREATE TABLE Student (
+    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    phone_number VARCHAR(20),
+    year_of_enrollment INT,
+    dob DATE,
+    email VARCHAR(255)
+);
+
+-- Table: ExtracurricularActivity
+CREATE TABLE ExtracurricularActivity (
+    activity_id INT AUTO_INCREMENT PRIMARY KEY,
+    activity_name VARCHAR(255),
+    description TEXT,
+    schedule VARCHAR(255),
+    location VARCHAR(255)
+);
+
+-- Table: Team
+CREATE TABLE Team (
+    team_id INT AUTO_INCREMENT PRIMARY KEY,
+    team_name VARCHAR(255),
+    year_formed INT,
+    activity_id INT,
+    coach_id INT
+);
+
+-- Table: Coach
+CREATE TABLE Coach (
+    coach_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    phone_number VARCHAR(20),
+    email VARCHAR(255)
+);
+
+-- Table: Staff
+CREATE TABLE Staff (
+    staff_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    role VARCHAR(255),
+    email VARCHAR(255),
+    phone_number VARCHAR(20)
+);
+
+-- Table: StudentRegistration
+CREATE TABLE StudentRegistration (
+    registration_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    activity_id INT
+);
+
+-- Table: StudentTeam
+CREATE TABLE StudentTeam (
+    student_id INT,
+    team_id INT,
+    PRIMARY KEY (student_id, team_id)
+);
+
+-- Adding Foreign Keys
+
+-- Add foreign key to Team
+ALTER TABLE Team
+ADD FOREIGN KEY (activity_id) REFERENCES ExtracurricularActivity(activity_id),
+ADD FOREIGN KEY (coach_id) REFERENCES Coach(coach_id);
+
+-- Add foreign key to Coach
+ALTER TABLE Coach
+ADD FOREIGN KEY (activity_id) REFERENCES ExtracurricularActivity(activity_id);
+
+-- Add foreign key to Staff
+ALTER TABLE Staff
+ADD FOREIGN KEY (activity_id) REFERENCES ExtracurricularActivity(activity_id);
+
+-- Add foreign key to StudentRegistration
+ALTER TABLE StudentRegistration
+ADD FOREIGN KEY (student_id) REFERENCES Student(student_id),
+ADD FOREIGN KEY (activity_id) REFERENCES ExtracurricularActivity(activity_id);
+
+-- Add foreign key to StudentTeam
+ALTER TABLE StudentTeam
+ADD FOREIGN KEY (student_id) REFERENCES Student(student_id),
+ADD FOREIGN KEY (team_id) REFERENCES Team(team_id);
+
+-- Table: Coach
+CREATE TABLE Coach (
+    coach_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    phone_number VARCHAR(20),
+    email VARCHAR(255),
+    activity_id INT
+);
+
+-- Adding Foreign Key to Coach
+ALTER TABLE Coach
+ADD FOREIGN KEY (activity_id) REFERENCES ExtracurricularActivity(activity_id);
+
+-- Adding activity_id column to Coach table
+ALTER TABLE Coach
+ADD COLUMN activity_id INT;
+
+-- Adding Foreign Key to Coach
+ALTER TABLE Coach
+ADD FOREIGN KEY (activity_id) REFERENCES ExtracurricularActivity(activity_id);
+
+
+-- Create Trigger for ExtracurricularActivity
+DELIMITER //
+CREATE TRIGGER extracurricular_activity_trigger
+BEFORE INSERT ON ExtracurricularActivity
+FOR EACH ROW
+BEGIN
+    SET NEW.schedule = CONCAT('Important: ', NEW.schedule);
+END;
+//
+DELIMITER //
+DELIMITER //
+
+CREATE FUNCTION CountStudents()
+RETURNS INT
+BEGIN
+    DECLARE total_students INT;
+    SELECT COUNT(*) INTO total_students FROM Student;
+    RETURN total_students;
+END //
+
+DELIMITER ;
